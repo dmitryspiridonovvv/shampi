@@ -1,0 +1,7 @@
+W:\education\Курсовая\MinerGame\MinerGameWF\obj\Debug\net8.0\MinerGameWF.csproj.AssemblyReference.cache
+W:\education\Курсовая\MinerGame\MinerGameWF\obj\Debug\net8.0\MinerGameWF.GameForm.resources
+W:\education\Курсовая\MinerGame\MinerGameWF\obj\Debug\net8.0\MinerGameWF.csproj.GenerateResource.cache
+W:\education\Курсовая\MinerGame\MinerGameWF\obj\Debug\net8.0\MinerGameWF.GeneratedMSBuildEditorConfig.editorconfig
+W:\education\Курсовая\MinerGame\MinerGameWF\obj\Debug\net8.0\MinerGameWF.AssemblyInfoInputs.cache
+W:\education\Курсовая\MinerGame\MinerGameWF\obj\Debug\net8.0\MinerGameWF.AssemblyInfo.cs
+W:\education\Курсовая\MinerGame\MinerGameWF\obj\Debug\net8.0\MinerGameWF.csproj.CoreCompileInputs.cache

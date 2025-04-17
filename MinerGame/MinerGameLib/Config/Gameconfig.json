@@ -1,0 +1,11 @@
+﻿{
+  "DefaultResolution": {
+    "X": 1280,
+    "Y": 720
+  },
+  "PlayerSpeed": 100.0,
+  "BombTimer": 3.0,
+  "PrizeSpawnInterval": 10.0,
+  "MineCooldown": 1.0,
+  "ExplosionRadius": 4.0
+}
