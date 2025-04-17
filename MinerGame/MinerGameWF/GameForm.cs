@@ -1,86 +1,58 @@
-﻿using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
-using OpenTK.Windowing.Common;
-using OpenTK.Windowing.Desktop;
-using OpenTK.Windowing.GraphicsLibraryFramework;
-using MinerGame.Core;
-using System;
+﻿using Stateless;
 
-namespace MinerGameWF
+namespace MinerGameLib.Source.Core
 {
-    public class GameForm : GameWindow
+    public class GameManager
     {
-        private GameManager? _gameManager;
-        private readonly InputHandler _inputHandler;
-        private float _lastFrameTime;
+        private readonly StateMachine<string, string> _stateMachine;
 
-        public GameForm(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
-            : base(gameWindowSettings, nativeWindowSettings)
+        public GameManager()
         {
-            _inputHandler = new InputHandler();
+            _stateMachine = new StateMachine<string, string>("Menu");
+
+            _stateMachine.Configure("Menu")
+                .Permit("Start", "Playing")
+                .Permit("Settings", "Settings");
+
+            _stateMachine.Configure("Playing")
+                .Permit("Pause", "Pause")
+                .Permit("GameOver", "GameOver");
+
+            _stateMachine.Configure("Pause")
+                .Permit("Resume", "Playing")
+                .Permit("Menu", "Menu");
+
+            _stateMachine.Configure("GameOver")
+                .Permit("Restart", "RestartPrompt");
+
+            _stateMachine.Configure("RestartPrompt")
+                .Permit("Confirm", "Menu");
+
+            _stateMachine.Configure("Settings")
+                .Permit("Back", "Menu");
         }
 
-        protected override void OnLoad()
+        public void Update()
         {
-            base.OnLoad();
-            GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-            GL.Viewport(0, 0, Size.X, Size.Y);
-            _gameManager = new GameManager(new Vector2i(Size.X, Size.Y));
-            _lastFrameTime = (float)GLFW.GetTime();
+            // Логика обновления игры
         }
 
-        protected override void OnResize(ResizeEventArgs e)
+        public void Render()
         {
-            base.OnResize(e);
-            GL.Viewport(0, 0, e.Width, e.Height);
-            _inputHandler.Resize(new Vector2i(e.Width, e.Height));
+            // Логика рендеринга игры
         }
 
-        protected override void OnUnload()
+        public void TransitionTo(string trigger)
         {
-            base.OnUnload();
-            _gameManager?.Dispose();
+            if (_stateMachine.CanFire(trigger))
+            {
+                _stateMachine.Fire(trigger);
+            }
         }
 
-        protected override void OnMouseDown(MouseButtonEventArgs e)
+        public string GetCurrentState()
         {
-            base.OnMouseDown(e);
-            var pos = new Vector2(MousePosition.X, Size.Y - MousePosition.Y);
-            _inputHandler.MouseClick(pos);
-        }
-
-        protected override void OnKeyDown(KeyboardKeyEventArgs e)
-        {
-            base.OnKeyDown(e);
-            _inputHandler.KeyDown(e.Key);
-        }
-
-        protected override void OnKeyUp(KeyboardKeyEventArgs e)
-        {
-            base.OnKeyUp(e);
-            _inputHandler.KeyUp(e.Key);
-        }
-
-        protected override void OnUpdateFrame(FrameEventArgs args)
-        {
-            base.OnUpdateFrame(args);
-            if (_gameManager == null) return;
-
-            float currentTime = (float)GLFW.GetTime();
-            float deltaTime = currentTime - _lastFrameTime;
-            _lastFrameTime = currentTime;
-
-            _gameManager.Update(deltaTime);
-        }
-
-        protected override void OnRenderFrame(FrameEventArgs args)
-        {
-            base.OnRenderFrame(args);
-            if (_gameManager == null) return;
-
-            GL.Clear(ClearBufferMask.ColorBufferBit);
-            _gameManager.Render();
-            SwapBuffers();
+            return _stateMachine.State;
         }
     }
 }

@@ -1,50 +1,36 @@
-﻿using MinerGame.Core;
-using MinerGame.UI;
-using OpenTK.Windowing.GraphicsLibraryFramework;
+﻿using MinerGameLib.Source.Core;
+using MinerGameLib.Source.UI;
 
-namespace MinerGame.States
+namespace MinerGameLib.Source.States
 {
-    public class RestartPromptState : GameState
+    public class RestartPromptState
     {
         private readonly GameManager _gameManager;
         private readonly MenuRenderer _menuRenderer;
 
-        public RestartPromptState(GameManager gameManager)
+        public RestartPromptState(GameManager gameManager, MenuRenderer menuRenderer)
         {
             _gameManager = gameManager;
-            _menuRenderer = new MenuRenderer(gameManager.Renderer, gameManager.WindowSize);
+            _menuRenderer = menuRenderer;
         }
 
-        public override void Enter()
+        public void Update()
         {
-            _gameManager.InputHandler.OnKeyDown += HandleKeyDown;
+            // Логика обновления
         }
 
-        public override void Exit()
+        public void Render()
         {
-            _gameManager.InputHandler.OnKeyDown -= HandleKeyDown;
-            _menuRenderer.Dispose();
+            // Пример рендеринга
+            var bitmap = _menuRenderer.RenderMenu("Restart?");
+            // Дополнительная логика рендеринга
         }
 
-        public override void Update(float deltaTime)
+        public void HandleInput(string input)
         {
-            // No updates needed
-        }
-
-        public override void Render(Renderer renderer)
-        {
-            _menuRenderer.Render(renderer);
-        }
-
-        private void HandleKeyDown(Keys key)
-        {
-            if (key == Keys.Y)
+            if (input == "Confirm")
             {
-                _gameManager.StateMachine.TransitionTo(new PlayingState(_gameManager));
-            }
-            else if (key == Keys.N)
-            {
-                _gameManager.StateMachine.TransitionTo(new MenuState(_gameManager));
+                _gameManager.TransitionTo("Confirm");
             }
         }
     }

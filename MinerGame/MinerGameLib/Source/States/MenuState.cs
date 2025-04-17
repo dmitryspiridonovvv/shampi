@@ -1,50 +1,40 @@
-﻿using MinerGame.Core;
-using MinerGame.UI;
-using OpenTK.Windowing.GraphicsLibraryFramework;
+﻿using MinerGameLib.Source.Core;
+using MinerGameLib.Source.UI;
 
-namespace MinerGame.States
+namespace MinerGameLib.Source.States
 {
-    public class MenuState : GameState
+    public class MenuState
     {
         private readonly GameManager _gameManager;
         private readonly MenuRenderer _menuRenderer;
 
-        public MenuState(GameManager gameManager)
+        public MenuState(GameManager gameManager, MenuRenderer menuRenderer)
         {
             _gameManager = gameManager;
-            _menuRenderer = new MenuRenderer(gameManager.Renderer, gameManager.WindowSize);
+            _menuRenderer = menuRenderer;
         }
 
-        public override void Enter()
+        public void Update()
         {
-            _gameManager.InputHandler.OnKeyDown += HandleKeyDown;
+            // Логика обновления меню
         }
 
-        public override void Exit()
+        public void Render()
         {
-            _gameManager.InputHandler.OnKeyDown -= HandleKeyDown;
-            _menuRenderer.Dispose();
+            // Пример рендеринга
+            var bitmap = _menuRenderer.RenderMenu("Main Menu");
+            // Дополнительная логика рендеринга
         }
 
-        public override void Update(float deltaTime)
+        public void HandleInput(string input)
         {
-            // No updates needed
-        }
-
-        public override void Render(Renderer renderer)
-        {
-            _menuRenderer.Render(renderer);
-        }
-
-        private void HandleKeyDown(Keys key)
-        {
-            if (key == Keys.Enter)
+            if (input == "Start")
             {
-                _gameManager.StateMachine.TransitionTo(new PlayingState(_gameManager));
+                _gameManager.TransitionTo("Start");
             }
-            else if (key == Keys.S)
+            else if (input == "Settings")
             {
-                _gameManager.StateMachine.TransitionTo(new SettingsState(_gameManager));
+                _gameManager.TransitionTo("Settings");
             }
         }
     }

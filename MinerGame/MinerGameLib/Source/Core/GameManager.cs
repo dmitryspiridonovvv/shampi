@@ -1,44 +1,59 @@
-﻿using MinerGame.States;
-using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
+﻿using Stateless;
 
-namespace MinerGame.Core
+namespace MinerGameLib.Source.Core
 {
     public class GameManager
     {
-        public Renderer Renderer { get; }
-        public Vector2i WindowSize { get; private set; }
-        public InputHandler InputHandler { get; }
-        public StateMachine StateMachine { get; }
+        private readonly StateMachine<string, string> _stateMachine;
 
-        public GameManager(Vector2i windowSize)
+        public GameManager()
         {
-            WindowSize = windowSize;
-            Renderer = new Renderer(windowSize);
-            InputHandler = new InputHandler();
-            StateMachine = new StateMachine();
-            StateMachine.TransitionTo(new MenuState(this));
+            _stateMachine = new StateMachine<string, string>("Menu");
 
-            // Установка цвета фона
-            GL.ClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Чёрный фон
+            // Настройка состояний
+            _stateMachine.Configure("Menu")
+                .Permit("Start", "Playing")
+                .Permit("Settings", "Settings");
+
+            _stateMachine.Configure("Playing")
+                .Permit("Pause", "Pause")
+                .Permit("GameOver", "GameOver");
+
+            _stateMachine.Configure("Pause")
+                .Permit("Resume", "Playing")
+                .Permit("Menu", "Menu");
+
+            _stateMachine.Configure("GameOver")
+                .Permit("Restart", "RestartPrompt");
+
+            _stateMachine.Configure("RestartPrompt")
+                .Permit("Confirm", "Menu");
+
+            _stateMachine.Configure("Settings")
+                .Permit("Back", "Menu");
         }
 
-        public void UpdateWindowSize(Vector2i newSize)
+        public void Update()
         {
-            WindowSize = newSize;
-            Renderer.UpdateWindowSize(newSize);
-            GL.Viewport(0, 0, newSize.X, newSize.Y);
+            // Логика обновления
         }
 
-        public void Update(float deltaTime)
+        public void TransitionTo(string trigger)
         {
-            StateMachine.Update(deltaTime);
+            if (_stateMachine.CanFire(trigger))
+            {
+                _stateMachine.Fire(trigger);
+            }
         }
 
         public void Render()
         {
-            GL.Clear(ClearBufferMask.ColorBufferBit);
-            StateMachine.Render(Renderer);
+            // Логика рендеринга
+        }
+
+        public string GetCurrentState()
+        {
+            return _stateMachine.State;
         }
     }
 }

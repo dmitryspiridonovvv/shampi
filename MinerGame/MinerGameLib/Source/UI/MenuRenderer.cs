@@ -1,37 +1,20 @@
-﻿using MinerGame.Core;
-using OpenTK.Mathematics;
-using System;
+﻿using System.Drawing;
+using MinerGameLib.Source.UI;
 
-namespace MinerGame.UI
+namespace MinerGameLib.Source.UI
 {
-    public class MenuRenderer : IDisposable
+    public class MenuRenderer
     {
-        private readonly Renderer _renderer;
         private readonly FontRenderer _fontRenderer;
-        private readonly Vector2i _windowSize;
 
-        public MenuRenderer(Renderer renderer, Vector2i windowSize)
+        public MenuRenderer(string fontPath, float fontSize)
         {
-            _renderer = renderer;
-            _windowSize = windowSize;
-            _fontRenderer = new FontRenderer(renderer, "Resources/Fonts/Agitpropc.otf", 16);
+            _fontRenderer = new FontRenderer(fontPath, fontSize);
         }
 
-        public void Render(Renderer renderer)
+        public Bitmap RenderMenu(string menuText)
         {
-            Console.WriteLine("Rendering MenuRenderer");
-            string text = "Miner Game\nPress Enter to Start\nS for Settings";
-            var lines = text.Split('\n');
-            float lineHeight = 20;
-            float y = _windowSize.Y / 2 - (lines.Length - 1) * lineHeight / 2; // Центрирование по Y
-
-            foreach (var line in lines)
-            {
-                var textSize = new Vector2(line.Length * 10, 16);
-                var position = new Vector2((_windowSize.X - textSize.X) / 2, y); // Центрирование по X
-                _fontRenderer.RenderText(line, position, 1.0f);
-                y += lineHeight; // Сдвиг вниз
-            }
+            return _fontRenderer.RenderText(menuText, Color.White, 800, 600);
         }
 
         public void Dispose()

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MinerGameWF")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a53d352cbe3a3c5f0a022b2f9fcb580befbc0847")]
 [assembly: System.Reflection.AssemblyProductAttribute("MinerGameWF")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MinerGameWF")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

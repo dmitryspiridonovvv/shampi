@@ -1,33 +1,20 @@
-﻿using OpenTK.Mathematics;
-using OpenTK.Windowing.Desktop;
-using OpenTK.Windowing.Common;
-using OpenTK.Graphics.OpenGL4;
-using MinerGame.Core;
+﻿using OpenTK.Windowing.Desktop;
 
-namespace MinerGame
+namespace MinerGameWF
 {
     class Program
     {
-        static void Main()
+        static void Main(string[] args)
         {
-            var windowSettings = new NativeWindowSettings()
+            var windowSettings = new NativeWindowSettings
             {
-                Size = new Vector2i(800, 600),
-                Title = "Miner Game",
-                WindowBorder = WindowBorder.Fixed
+                ClientSize = new OpenTK.Mathematics.Vector2i(800, 600),
+                Title = "Miner Game"
             };
 
-            using (var window = new GameWindow(GameWindowSettings.Default, windowSettings))
+            using (var game = new GameWindow(GameWindowSettings.Default, windowSettings))
             {
-                var gameManager = new GameManager(window.Size);
-                window.Resize += args => gameManager.UpdateWindowSize(window.Size);
-                window.UpdateFrame += args => gameManager.Update((float)args.Time);
-                window.RenderFrame += args =>
-                {
-                    gameManager.Render();
-                    window.SwapBuffers();
-                };
-                window.Run();
+                game.Run();
             }
         }
     }

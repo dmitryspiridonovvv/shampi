@@ -1,67 +1,36 @@
-﻿using MinerGame.Core;
-using MinerGame.UI;
-using OpenTK.Mathematics;
-using OpenTK.Windowing.GraphicsLibraryFramework;
+﻿using MinerGameLib.Source.Core;
+using MinerGameLib.Source.UI;
 
-namespace MinerGame.States
+namespace MinerGameLib.Source.States
 {
-    public class GameOverState : GameState
+    public class GameOverState
     {
         private readonly GameManager _gameManager;
-        private readonly string _winner;
         private readonly MenuRenderer _menuRenderer;
 
-        public GameOverState(GameManager gameManager, string winner)
+        public GameOverState(GameManager gameManager, MenuRenderer menuRenderer)
         {
             _gameManager = gameManager;
-            _winner = winner;
-            _menuRenderer = new MenuRenderer(gameManager.Renderer, gameManager.WindowSize);
+            _menuRenderer = menuRenderer;
         }
 
-        public override void Enter()
+        public void Update()
         {
-            _gameManager.InputHandler.OnKeyDown += HandleKeyDown;
+            // Логика обновления
         }
 
-        public override void Exit()
+        public void Render()
         {
-            _gameManager.InputHandler.OnKeyDown -= HandleKeyDown;
-            _menuRenderer.Dispose();
+            // Пример рендеринга
+            var bitmap = _menuRenderer.RenderMenu("Game Over");
+            // Дополнительная логика рендеринга
         }
 
-        public override void Update(float deltaTime)
+        public void HandleInput(string input)
         {
-        }
-
-        public override void Render(Renderer renderer)
-        {
-            Console.WriteLine("Rendering GameOverState");
-            var fontRenderer = new FontRenderer(renderer, "Resources/Fonts/Agitpropc.otf", 16);
-            string text = $"Game Over\nWinner: {_winner}\nPress Escape for Menu\nR to Restart";
-            var lines = text.Split('\n');
-            float lineHeight = 20;
-            float y = _gameManager.WindowSize.Y / 2 - (lines.Length - 1) * lineHeight / 2;
-
-            foreach (var line in lines)
+            if (input == "Restart")
             {
-                var textSize = new Vector2(line.Length * 10, 16);
-                var position = new Vector2((_gameManager.WindowSize.X - textSize.X) / 2, y);
-                fontRenderer.RenderText(line, position, 1.0f);
-                y += lineHeight;
-            }
-
-            fontRenderer.Dispose();
-        }
-
-        private void HandleKeyDown(Keys key)
-        {
-            if (key == Keys.Escape)
-            {
-                _gameManager.StateMachine.TransitionTo(new MenuState(_gameManager));
-            }
-            else if (key == Keys.R)
-            {
-                _gameManager.StateMachine.TransitionTo(new RestartPromptState(_gameManager));
+                _gameManager.TransitionTo("Restart");
             }
         }
     }

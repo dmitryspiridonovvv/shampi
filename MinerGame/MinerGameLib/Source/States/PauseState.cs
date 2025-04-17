@@ -1,50 +1,40 @@
-﻿using MinerGame.Core;
-using MinerGame.UI;
-using OpenTK.Windowing.GraphicsLibraryFramework;
+﻿using MinerGameLib.Source.Core;
+using MinerGameLib.Source.UI;
 
-namespace MinerGame.States
+namespace MinerGameLib.Source.States
 {
-    public class PauseState : GameState
+    public class PauseState
     {
         private readonly GameManager _gameManager;
         private readonly MenuRenderer _menuRenderer;
 
-        public PauseState(GameManager gameManager)
+        public PauseState(GameManager gameManager, MenuRenderer menuRenderer)
         {
             _gameManager = gameManager;
-            _menuRenderer = new MenuRenderer(gameManager.Renderer, gameManager.WindowSize);
+            _menuRenderer = menuRenderer;
         }
 
-        public override void Enter()
+        public void Update()
         {
-            _gameManager.InputHandler.OnKeyDown += HandleKeyDown;
+            // Логика обновления
         }
 
-        public override void Exit()
+        public void Render()
         {
-            _gameManager.InputHandler.OnKeyDown -= HandleKeyDown;
-            _menuRenderer.Dispose();
+            // Пример рендеринга
+            var bitmap = _menuRenderer.RenderMenu("Paused");
+            // Дополнительная логика рендеринга
         }
 
-        public override void Update(float deltaTime)
+        public void HandleInput(string input)
         {
-            // No updates needed
-        }
-
-        public override void Render(Renderer renderer)
-        {
-            _menuRenderer.Render(renderer);
-        }
-
-        private void HandleKeyDown(Keys key)
-        {
-            if (key == Keys.Escape)
+            if (input == "Resume")
             {
-                _gameManager.StateMachine.TransitionTo(new PlayingState(_gameManager));
+                _gameManager.TransitionTo("Resume");
             }
-            else if (key == Keys.M)
+            else if (input == "Menu")
             {
-                _gameManager.StateMachine.TransitionTo(new MenuState(_gameManager));
+                _gameManager.TransitionTo("Menu");
             }
         }
     }

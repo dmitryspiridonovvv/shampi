@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "11nkHhk78mc=",
+  "dgSpecHash": "30MZnkdLsHo=",
   "success": true,
   "projectFilePath": "W:\\education\\Курсовая\\MinerGame\\MinerGameWF\\MinerGameWF.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\джигит\\.nuget\\packages\\microsoft.win32.systemevents\\9.0.4\\microsoft.win32.systemevents.9.0.4.nupkg.sha512",
     "C:\\Users\\джигит\\.nuget\\packages\\opentk\\4.8.2\\opentk.4.8.2.nupkg.sha512",
     "C:\\Users\\джигит\\.nuget\\packages\\opentk.audio.openal\\4.8.2\\opentk.audio.openal.4.8.2.nupkg.sha512",
     "C:\\Users\\джигит\\.nuget\\packages\\opentk.compute\\4.8.2\\opentk.compute.4.8.2.nupkg.sha512",
@@ -17,7 +18,9 @@
     "C:\\Users\\джигит\\.nuget\\packages\\opentk.windowing.graphicslibraryframework\\4.8.2\\opentk.windowing.graphicslibraryframework.4.8.2.nupkg.sha512",
     "C:\\Users\\джигит\\.nuget\\packages\\sharpfont\\4.0.1\\sharpfont.4.0.1.nupkg.sha512",
     "C:\\Users\\джигит\\.nuget\\packages\\sharpfont.dependencies\\2.6.0\\sharpfont.dependencies.2.6.0.nupkg.sha512",
+    "C:\\Users\\джигит\\.nuget\\packages\\stateless\\5.17.0\\stateless.5.17.0.nupkg.sha512",
     "C:\\Users\\джигит\\.nuget\\packages\\stbimagesharp\\2.27.13\\stbimagesharp.2.27.13.nupkg.sha512",
+    "C:\\Users\\джигит\\.nuget\\packages\\system.drawing.common\\9.0.4\\system.drawing.common.9.0.4.nupkg.sha512",
     "C:\\Users\\джигит\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\5.0.0\\system.runtime.compilerservices.unsafe.5.0.0.nupkg.sha512"
   ],
   "logs": []

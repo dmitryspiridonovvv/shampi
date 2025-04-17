@@ -1,141 +1,77 @@
-﻿using MinerGame.Core;
-using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
+﻿#pragma warning disable CA1416
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.IO;
+using System.Drawing.Text;
 
-namespace MinerGame.UI
+namespace MinerGameLib.Source.UI
 {
-    public class FontRenderer : IDisposable
+    public class FontRenderer
     {
-        private readonly Renderer _renderer;
-        private readonly Dictionary<char, Glyph> _glyphCache;
-        private readonly Font _font;
+        private readonly PrivateFontCollection _fontCollection;
+        private Font _font;
 
-        private struct Glyph
+        public FontRenderer(string fontPath, float fontSize)
         {
-            public int TextureId;
-            public Vector2 Size;
-            public Vector2 Bearing;
-            public float Advance;
-        }
-
-        public FontRenderer(Renderer renderer, string fontPath, int fontSize = 16)
-        {
-            _renderer = renderer;
-            _glyphCache = new Dictionary<char, Glyph>();
-
+            _fontCollection = new PrivateFontCollection();
             try
             {
-                if (!File.Exists(fontPath))
-                    throw new FileNotFoundException($"Font file not found: {fontPath}");
-
-                var fontCollection = new System.Drawing.Text.PrivateFontCollection();
-                fontCollection.AddFontFile(fontPath);
-                _font = new Font(fontCollection.Families[0], fontSize);
-                Console.WriteLine($"Font loaded: {fontPath}, size: {fontSize}");
+                _fontCollection.AddFontFile(fontPath);
+                _font = new Font(_fontCollection.Families[0], fontSize, FontStyle.Regular);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Failed to load font: {ex.Message}");
-                throw;
+                Console.WriteLine($"Ошибка загрузки шрифта: {ex.Message}");
+                _font = new Font("Arial", fontSize);
             }
-
-            LoadGlyphs(" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~");
         }
 
-        private void LoadGlyphs(string characters)
+        public Bitmap RenderText(string text, Color textColor, int width, int height)
         {
-            using var bitmap = new Bitmap(1, 1);
-            using var graphics = Graphics.FromImage(bitmap);
-            var stringFormat = StringFormat.GenericTypographic;
-
-            GL.PixelStore(PixelStoreParameter.UnpackAlignment, 1);
-
-            foreach (char c in characters)
+            var bitmap = new Bitmap(width, height);
+            using (var graphics = Graphics.FromImage(bitmap))
             {
-                if (_glyphCache.ContainsKey(c)) continue;
+                graphics.Clear(Color.Transparent);
+                graphics.TextRenderingHint = TextRenderingHint.AntiAlias;
 
-                var size = graphics.MeasureString(c.ToString(), _font, PointF.Empty, stringFormat);
-                int width = (int)Math.Ceiling(size.Width);
-                int height = (int)Math.Ceiling(size.Height);
-
-                if (width == 0 || height == 0)
+                using (var format = new StringFormat())
                 {
-                    Console.WriteLine($"Glyph '{c}' has zero size, skipping");
-                    continue;
+                    format.Alignment = StringAlignment.Center;
+                    format.LineAlignment = StringAlignment.Center;
+
+                    using (var brush = new SolidBrush(textColor))
+                    {
+                        graphics.DrawString(text, _font, brush, new RectangleF(0, 0, width, height), format);
+                    }
                 }
-
-                using var charBitmap = new Bitmap(width, height);
-                using var charGraphics = Graphics.FromImage(charBitmap);
-                charGraphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
-                charGraphics.DrawString(c.ToString(), _font, Brushes.White, 0, 0, stringFormat);
-
-                var bitmapData = charBitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-                int texId = GL.GenTexture();
-                GL.BindTexture(TextureTarget.Texture2D, texId);
-                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0,
-                    PixelFormat.Bgra, PixelType.UnsignedByte, bitmapData.Scan0);
-                charBitmap.UnlockBits(bitmapData);
-
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Linear);
-
-                _glyphCache[c] = new Glyph
-                {
-                    TextureId = texId,
-                    Size = new Vector2(width, height),
-                    Bearing = new Vector2(0, height),
-                    Advance = width
-                };
             }
-
-            GL.PixelStore(PixelStoreParameter.UnpackAlignment, 4);
+            return bitmap;
         }
 
-        public void RenderText(string text, Vector2 position, float scale = 1.0f)
+        public unsafe byte[] GetBitmapData(Bitmap bitmap)
         {
-            Console.WriteLine($"Rendering text: '{text}' at {position}");
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            var bitmapData = bitmap.LockBits(
+                new Rectangle(0, 0, bitmap.Width, bitmap.Height),
+                ImageLockMode.ReadOnly,
+                PixelFormat.Format32bppArgb);
 
-            float x = position.X;
-            foreach (char c in text)
+            var length = bitmapData.Stride * bitmapData.Height;
+            var data = new byte[length];
+
+            fixed (byte* ptr = data)
             {
-                if (!_glyphCache.ContainsKey(c)) continue;
-
-                var glyph = _glyphCache[c];
-                float xpos = x + glyph.Bearing.X * scale;
-                float ypos = position.Y - (glyph.Size.Y - glyph.Bearing.Y) * scale;
-
-                float w = glyph.Size.X * scale;
-                float h = glyph.Size.Y * scale;
-
-                if (w > 0 && h > 0)
-                {
-                    var texCoords = new Vector4(0, 0, 1, 1);
-                    _renderer.DrawSprite(glyph.TextureId, new Vector2(xpos, ypos), new Vector2(w, h), texCoords);
-                }
-
-                x += glyph.Advance * scale;
+                Buffer.MemoryCopy((void*)bitmapData.Scan0, ptr, length, length);
             }
 
-            GL.Disable(EnableCap.Blend);
+            bitmap.UnlockBits(bitmapData);
+            return data;
         }
 
         public void Dispose()
         {
-            foreach (var glyph in _glyphCache.Values)
-            {
-                GL.DeleteTexture(glyph.TextureId);
-            }
-            _glyphCache.Clear();
             _font?.Dispose();
+            _fontCollection?.Dispose();
         }
     }
 }
+#pragma warning restore CA1416

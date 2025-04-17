@@ -1,11 +1,9 @@
-﻿using MinerGame.States;
-using System;
+﻿using MinerGameLib.Source.Core;
 
-namespace MinerGame.Core
+namespace MinerGameLib.Source.Core
 {
     public class GameStateMachine
     {
-        private GameState? _currentState;
         private readonly GameManager _gameManager;
 
         public GameStateMachine(GameManager gameManager)
@@ -13,21 +11,14 @@ namespace MinerGame.Core
             _gameManager = gameManager;
         }
 
-        public void TransitionTo(GameState newState)
+        public void Update()
         {
-            _currentState?.Exit();
-            _currentState = newState;
-            _currentState.Enter();
+            _gameManager.Update();
         }
 
-        public void Update(float deltaTime)
+        public void Render()
         {
-            _currentState?.Update(deltaTime);
-        }
-
-        public void Render(Renderer renderer)
-        {
-            _currentState?.Render(renderer);
+            _gameManager.Render();
         }
     }
 }
