@@ -16,15 +16,43 @@
     <PackageReference Include="System.Drawing.Common" Version="9.0.4" />
   </ItemGroup>
 
+  <!-- Копирование ресурсов в корень bin\Debug\net8.0 -->
   <ItemGroup>
+    <None Update="Config\Gameconfig.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>Gameconfig.json</TargetPath>
+    </None>
     <None Update="Resources\Fonts\Agitpropc.otf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>Agitpropc.otf</TargetPath>
+    </None>
+    <None Update="Resources\Textures\player1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>player1.png</TargetPath>
+    </None>
+    <None Update="Resources\Textures\player2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>player2.png</TargetPath>
+    </None>
+    <None Update="Resources\Textures\wall.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>wall.png</TargetPath>
+    </None>
+    <None Update="Resources\Textures\mine.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>mine.png</TargetPath>
+    </None>
+    <None Update="Resources\Textures\prize.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>prize.png</TargetPath>
     </None>
     <None Update="Resources\Shaders\sprite.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>sprite.vert</TargetPath>
     </None>
     <None Update="Resources\Shaders\sprite.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>sprite.frag</TargetPath>
     </None>
   </ItemGroup>
 

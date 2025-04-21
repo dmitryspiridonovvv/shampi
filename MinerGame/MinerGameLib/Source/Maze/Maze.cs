@@ -3,6 +3,7 @@ using MinerGame.Core;
 using MinerGame.GameObjects;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
@@ -23,10 +24,20 @@ namespace MinerGame.Maze
         private readonly float _bombTimer;
         private readonly float _explosionRadius;
         private readonly float _mineCooldown;
+        private readonly float _prizeSpawnInterval;
         private float _lastPrizeSpawnTime;
         private Vector2 _initialPlayer1Position;
         private Vector2 _initialPlayer2Position;
         private readonly Renderer _renderer;
+
+        private static readonly Dictionary<string, string[]> TexturePaths = new Dictionary<string, string[]>
+        {
+            { "player1.png", new[] { Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "player1.png"), @"W:\education\Курсовая\MinerGame\MinerGameLib\Resources\Textures\player1.png" } },
+            { "player2.png", new[] { Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "player2.png"), @"W:\education\Курсовая\MinerGame\MinerGameLib\Resources\Textures\player2.png" } },
+            { "wall.png", new[] { Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wall.png"), @"W:\education\Курсовая\MinerGame\MinerGameLib\Resources\Textures\wall.png" } },
+            { "mine.png", new[] { Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "mine.png"), @"W:\education\Курсовая\MinerGame\MinerGameLib\Resources\Textures\mine.png" } },
+            { "prize.png", new[] { Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "prize.png"), @"W:\education\Курсовая\MinerGame\MinerGameLib\Resources\Textures\prize.png" } }
+        };
 
         public IReadOnlyList<Miner> Miners
         {
@@ -39,21 +50,47 @@ namespace MinerGame.Maze
             }
         }
 
-        public Maze(Vector2i windowSize, float playerSpeed, float bombTimer, float explosionRadius, float mineCooldown, Renderer renderer)
+        public Maze(Vector2i windowSize, float playerSpeed, float bombTimer, float explosionRadius, float mineCooldown, Renderer renderer, float prizeSpawnInterval = 10.0f)
         {
+            Console.WriteLine("[Maze.Constructor] Initializing Maze...");
             _windowSize = windowSize;
             _cellSize = 50f;
             _playerSpeed = playerSpeed;
             _bombTimer = bombTimer;
             _explosionRadius = explosionRadius;
             _mineCooldown = mineCooldown;
+            _prizeSpawnInterval = prizeSpawnInterval;
             _renderer = renderer;
             _prizeFactory = new PrizeFactory(_cellSize, renderer);
             InitializeObjects();
+            Console.WriteLine("[Maze.Constructor] Maze initialized.");
+        }
+
+        private string GetTexturePath(string textureName)
+        {
+            if (!TexturePaths.TryGetValue(textureName, out var paths))
+            {
+                Console.WriteLine($"[Maze.GetTexturePath] Error: Texture {textureName} not defined in TexturePaths.");
+                return null;
+            }
+
+            foreach (var path in paths)
+            {
+                Console.WriteLine($"[Maze.GetTexturePath] Checking texture {textureName} at: {path}");
+                if (File.Exists(path))
+                    return path;
+            }
+
+            Console.WriteLine($"[Maze.GetTexturePath] Error: Texture {textureName} not found at any of the following paths:");
+            foreach (var path in paths)
+                Console.WriteLine($"  - {path}");
+            Console.WriteLine($"[Maze.GetTexturePath] Please ensure {textureName} exists in W:\\education\\Курсовая\\MinerGame\\MinerGameLib\\Resources\\Textures and is copied to W:\\education\\Курсовая\\MinerGame\\MinerGameWF\\bin\\Debug\\net8.0.");
+            return null;
         }
 
         private void InitializeObjects()
         {
+            Console.WriteLine("[Maze.InitializeObjects] Initializing objects...");
             _walls.Clear();
             _mines.Clear();
             _prizes.Clear();
@@ -61,8 +98,19 @@ namespace MinerGame.Maze
             _initialPlayer1Position = new Vector2(_cellSize, _cellSize);
             _initialPlayer2Position = new Vector2(_windowSize.X - 2 * _cellSize, _windowSize.Y - 2 * _cellSize);
 
-            _player1 = new Miner(_initialPlayer1Position, "Resources/Textures/player1.png", true, 1, _cellSize, _playerSpeed, _renderer, _mineCooldown);
-            _player2 = new Miner(_initialPlayer2Position, "Resources/Textures/player2.png", false, 1, _cellSize, _playerSpeed, _renderer, _mineCooldown);
+            string player1Texture = GetTexturePath("player1.png");
+            string player2Texture = GetTexturePath("player2.png");
+            string wallTexture = GetTexturePath("wall.png");
+            string mineTexture = GetTexturePath("mine.png");
+
+            if (player1Texture == null || player2Texture == null || wallTexture == null || mineTexture == null)
+            {
+                Console.WriteLine("[Maze.InitializeObjects] Error: One or more textures are missing. Cannot initialize Maze.");
+                return;
+            }
+
+            _player1 = new Miner(_initialPlayer1Position, player1Texture, true, 1, _cellSize, _playerSpeed, _renderer, _mineCooldown);
+            _player2 = new Miner(_initialPlayer2Position, player2Texture, false, 1, _cellSize, _playerSpeed, _renderer, _mineCooldown);
 
             for (int x = 0; x < _windowSize.X; x += (int)_cellSize)
             {
@@ -70,10 +118,11 @@ namespace MinerGame.Maze
                 {
                     if (_random.NextDouble() < 0.2 && (x > _cellSize * 2 || y > _cellSize * 2) && (x < _windowSize.X - _cellSize * 3 || y < _windowSize.Y - _cellSize * 3))
                     {
-                        _walls.Add(new Wall(new Vector2(x, y), "Resources/Textures/wall.png", _cellSize, _renderer));
+                        _walls.Add(new Wall(new Vector2(x, y), wallTexture, _cellSize, _renderer));
                     }
                 }
             }
+            Console.WriteLine("[Maze.InitializeObjects] Objects initialized.");
         }
 
         public void Update(float deltaTime)
@@ -179,17 +228,18 @@ namespace MinerGame.Maze
             InitializeObjects();
         }
 
-        public void Render(Renderer renderer)
+        public void Render(Renderer? renderer)
         {
-            foreach (var wall in _walls) wall.Render(renderer);
-            foreach (var mine in _mines) mine.Render(renderer);
-            foreach (var prize in _prizes) prize.Render(renderer);
-            if (_player1 != null) _player1.Render(renderer);
-            if (_player2 != null) _player2.Render(renderer);
+            foreach (var wall in _walls) wall.Render(_renderer);
+            foreach (var mine in _mines) mine.Render(_renderer);
+            foreach (var prize in _prizes) prize.Render(_renderer);
+            if (_player1 != null) _player1.Render(_renderer);
+            if (_player2 != null) _player2.Render(_renderer);
         }
 
         public void Dispose()
         {
+            Console.WriteLine("[Maze.Dispose] Disposing resources...");
             foreach (var wall in _walls) wall.Dispose();
             foreach (var mine in _mines) mine.Dispose();
             foreach (var prize in _prizes) prize.Dispose();
@@ -212,10 +262,16 @@ namespace MinerGame.Maze
         private void SpawnPrizes(float deltaTime)
         {
             _lastPrizeSpawnTime += deltaTime;
-            if (_lastPrizeSpawnTime >= 5.0f)
+            if (_lastPrizeSpawnTime >= _prizeSpawnInterval)
             {
                 float x = _random.Next((int)_cellSize, _windowSize.X - (int)_cellSize);
                 float y = _random.Next((int)_cellSize, _windowSize.Y - (int)_cellSize);
+                string prizeTexture = GetTexturePath("prize.png");
+                if (prizeTexture == null)
+                {
+                    Console.WriteLine("[Maze.SpawnPrizes] Error: Cannot spawn prize due to missing prize.png.");
+                    return;
+                }
                 _prizes.Add(_prizeFactory.CreatePrize(new Vector2(x, y)));
                 _lastPrizeSpawnTime = 0f;
             }

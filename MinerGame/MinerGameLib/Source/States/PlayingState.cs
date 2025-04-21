@@ -1,24 +1,37 @@
 ﻿using MinerGameLib.Source.Core;
+using MinerGame.Maze;
+using System.Linq;
+using MinerGame.Core;
 
 namespace MinerGameLib.Source.States
 {
     public class PlayingState
     {
         private readonly GameManager _gameManager;
+        private readonly MazeRenderer _mazeRenderer;
+        private readonly IMaze _maze;
 
-        public PlayingState(GameManager gameManager)
+        public PlayingState(GameManager gameManager, MazeRenderer mazeRenderer, IMaze maze)
         {
             _gameManager = gameManager;
+            _mazeRenderer = mazeRenderer;
+            _maze = maze;
         }
 
-        public void Update()
+        public void Update(float deltaTime)
         {
-            // Логика игры
+            _maze.Update(deltaTime);
+
+            var miners = _maze.GetMiners();
+            if (miners.All(miner => !miner.IsAlive))
+            {
+                _gameManager.TransitionTo("GameOver");
+            }
         }
 
         public void Render()
         {
-            _gameManager.Render();
+            _mazeRenderer.Render(_maze);
         }
 
         public void HandleInput(string input)

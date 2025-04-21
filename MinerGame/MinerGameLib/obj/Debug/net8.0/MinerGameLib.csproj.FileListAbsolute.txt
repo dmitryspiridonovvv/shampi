@@ -1,8 +1,5 @@
 W:\education\Курсовая\MinerGame\MinerGameLib\bin\Debug\net8.0\freetype6.dll
 W:\education\Курсовая\MinerGame\MinerGameLib\bin\Debug\net8.0\SharpFont.dll.config
-W:\education\Курсовая\MinerGame\MinerGameLib\bin\Debug\net8.0\Resources\Fonts\Agitpropc.otf
-W:\education\Курсовая\MinerGame\MinerGameLib\bin\Debug\net8.0\Resources\Shaders\sprite.frag
-W:\education\Курсовая\MinerGame\MinerGameLib\bin\Debug\net8.0\Resources\Shaders\sprite.vert
 W:\education\Курсовая\MinerGame\MinerGameLib\bin\Debug\net8.0\MinerGameLib.deps.json
 W:\education\Курсовая\MinerGame\MinerGameLib\bin\Debug\net8.0\MinerGameLib.dll
 W:\education\Курсовая\MinerGame\MinerGameLib\bin\Debug\net8.0\MinerGameLib.pdb
@@ -16,3 +13,8 @@ W:\education\Курсовая\MinerGame\MinerGameLib\obj\Debug\net8.0\MinerGameL
 W:\education\Курсовая\MinerGame\MinerGameLib\obj\Debug\net8.0\refint\MinerGameLib.dll
 W:\education\Курсовая\MinerGame\MinerGameLib\obj\Debug\net8.0\MinerGameLib.pdb
 W:\education\Курсовая\MinerGame\MinerGameLib\obj\Debug\net8.0\ref\MinerGameLib.dll
+W:\education\Курсовая\MinerGame\MinerGameLib\bin\Debug\net8.0\Gameconfig.json
+W:\education\Курсовая\MinerGame\MinerGameLib\bin\Debug\net8.0\Agitpropc.otf
+W:\education\Курсовая\MinerGame\MinerGameLib\bin\Debug\net8.0\sprite.frag
+W:\education\Курсовая\MinerGame\MinerGameLib\bin\Debug\net8.0\sprite.vert
+W:\education\Курсовая\MinerGame\MinerGameLib\bin\Debug\net8.0\mine.png

@@ -14,7 +14,7 @@ namespace MinerGameLib.Source.UI
 
         public Bitmap RenderMenu(string menuText)
         {
-            return _fontRenderer.RenderText(menuText, Color.White, 800, 600);
+            return _fontRenderer.RenderText(menuText, Color.White, 1280, 720); // Размер из Gameconfig.json
         }
 
         public void Dispose()

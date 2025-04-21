@@ -1,6 +1,4 @@
-﻿using MinerGameLib.Source.Core;
-
-namespace MinerGameLib.Source.Core
+﻿namespace MinerGameLib.Source.Core
 {
     public class GameStateMachine
     {
@@ -11,14 +9,9 @@ namespace MinerGameLib.Source.Core
             _gameManager = gameManager;
         }
 
-        public void Update()
+        public void Update(float deltaTime)
         {
-            _gameManager.Update();
-        }
-
-        public void Render()
-        {
-            _gameManager.Render();
+            _gameManager.Update(deltaTime);
         }
     }
 }

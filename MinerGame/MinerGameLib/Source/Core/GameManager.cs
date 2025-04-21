@@ -1,4 +1,5 @@
 ﻿using Stateless;
+using System;
 
 namespace MinerGameLib.Source.Core
 {
@@ -10,7 +11,6 @@ namespace MinerGameLib.Source.Core
         {
             _stateMachine = new StateMachine<string, string>("Menu");
 
-            // Настройка состояний
             _stateMachine.Configure("Menu")
                 .Permit("Start", "Playing")
                 .Permit("Settings", "Settings");
@@ -33,22 +33,22 @@ namespace MinerGameLib.Source.Core
                 .Permit("Back", "Menu");
         }
 
-        public void Update()
+        public void Update(float deltaTime)
         {
-            // Логика обновления
+            Console.WriteLine($"GameManager Update: Current State = {_stateMachine.State}");
         }
 
         public void TransitionTo(string trigger)
         {
             if (_stateMachine.CanFire(trigger))
             {
+                Console.WriteLine($"Transitioning to {trigger}");
                 _stateMachine.Fire(trigger);
             }
-        }
-
-        public void Render()
-        {
-            // Логика рендеринга
+            else
+            {
+                Console.WriteLine($"Cannot transition with trigger {trigger} from state {_stateMachine.State}");
+            }
         }
 
         public string GetCurrentState()

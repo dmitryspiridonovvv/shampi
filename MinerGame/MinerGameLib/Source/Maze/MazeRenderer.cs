@@ -1,19 +1,20 @@
 ﻿using MinerGame.Core;
+using OpenTK.Mathematics;
 
 namespace MinerGame.Maze
 {
-    public class MazeRenderer : IRenderable
+    public class MazeRenderer
     {
-        private readonly IMaze _maze;
+        public readonly IMaze _maze;
 
         public MazeRenderer(IMaze maze)
         {
             _maze = maze;
         }
 
-        public void Render(Renderer renderer)
+        public void Render(IMaze maze)
         {
-            _maze.Render(renderer);
+            maze.Render(null!); // Предполагается, что Maze использует внутренний Renderer
         }
     }
 }
